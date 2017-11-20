@@ -6,21 +6,7 @@ export default class App extends React.Component {
     constructor() {
         super();
         this.state = {
-            selectedTab: 0,
-            markers: [{
-                title: 'home',
-                coordinates: {
-                    latitude: -22.9856,
-                    longitude: -43.2338
-                }}
-                ,
-                {
-                title: 'ocean',
-                coordinates: {
-                    latitude: -23,
-                    longitude: -43.2338
-                }}
-            ]
+            selectedTab: 0
         };
     }
 
@@ -54,7 +40,6 @@ export default class App extends React.Component {
     handleTabPress(tab) {
         this.setState({ selectedTab: tab })
         }
-
 }
 
 
