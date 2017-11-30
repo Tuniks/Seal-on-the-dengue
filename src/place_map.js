@@ -48,7 +48,8 @@ export default class PlaceMap extends Component {
                     latitudeDelta: 0.05,
                     longitudeDelta: 0.05,
                 }}
-                onLongPress={(e) => this.addMarker(e)}>
+                onLongPress={(e) => this.addMarker(e)}
+                showsUserLocation={true}>
 
                 <MapView.Polygon coordinates={this.state.coordinates} fillColor={'rgba(0,0,0,0.2)'} />
 
