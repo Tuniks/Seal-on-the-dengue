@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AppRegistry, TabBarIOS, StyleSheet, Text, View, MapView } from 'react-native';
-import PlaceMap from './place_map';
+import PlaceMap from './src/place_map';
 
 export default class App extends React.Component {
     constructor() {
@@ -17,9 +17,6 @@ export default class App extends React.Component {
       </View>
     );
   }
-    // handleTabPress(tab) {
-    //     this.setState({ selectedTab: tab })
-    //     }
 }
 
 
