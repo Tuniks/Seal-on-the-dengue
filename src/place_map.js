@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import MapView from 'react-native-maps';
-import file from '../assets/saude_liraa.json';
+import Data from './saude_liraa.js';
 
 export default class PlaceMap extends Component {
     constructor() {
