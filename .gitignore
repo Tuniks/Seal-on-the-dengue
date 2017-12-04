@@ -1,5 +1,11 @@
+// Client
 node_modules/
 .expo/
 npm-debug.*
 *.swo
 *.swp
+.idea
+
+// Server
+__pycache__
+.env
