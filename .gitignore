@@ -5,4 +5,5 @@ npm-debug.*
 .idea
 
 // Server
+__pycache__
 .env
