@@ -9,7 +9,7 @@ export default class PlaceMap extends Component {
         this.state = {};
         this.state.polygons = [];
         this.state.markers = [];
-        this.state.currentPosition = undefined;
+        this.state.currentPosition = {latitude: -22.9844, longitude: -43.2324};
 
         fetch("http://192.168.43.210:3000/data.json")
             .then((response) => response.json())
@@ -32,8 +32,8 @@ export default class PlaceMap extends Component {
             <MapView
                 style={styles.map}
                 initialRegion={{
-                    latitude: -22.9844,
-                    longitude: -43.2324,
+                    latitude: this.state.currentPosition.latitude,
+                    longitude: this.state.currentPosition.longitude,
                     latitudeDelta: 0.05,
                     longitudeDelta: 0.05,
                 }}
@@ -53,7 +53,8 @@ export default class PlaceMap extends Component {
 
     addMarker(e){
         var newMark = {
-            title: JSON.stringify(e.nativeEvent.coordinate),
+            key: JSON.stringify(e.nativeEvent.coordinate),
+            title: "Alerta",
             coordinates: {
                 latitude: e.nativeEvent.coordinate.latitude,
                 longitude: e.nativeEvent.coordinate.longitude
