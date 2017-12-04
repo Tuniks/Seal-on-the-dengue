@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import MapView from 'react-native-maps';
+import gju from 'geojson-utils';
 
 export default class PlaceMap extends Component {
     constructor() {
@@ -10,6 +11,9 @@ export default class PlaceMap extends Component {
         this.state.polygons = [];
         this.state.markers = [];
         this.state.currentPosition = {latitude: -22.9844, longitude: -43.2324};
+
+        this.state.currentPolygon = {"LIRAa_Março_2017": "Carregando..."};
+
 
         fetch("http://192.168.43.210:3000/data.json")
             .then((response) => response.json())
@@ -24,7 +28,11 @@ export default class PlaceMap extends Component {
 
                     return element;
                 })});
+
+                this.checkRisk();
             });
+
+        this.getLocation();
     }
 
     render() {
@@ -41,6 +49,11 @@ export default class PlaceMap extends Component {
                 showsUserLocation={true}
                 followUserLocation={true}>
 
+                <MapView.Marker
+                    key={"location"}
+                    title={this.state.currentPolygon["LIRAa_Março_2017"]}
+                    coordinate={this.state.currentPosition} />
+
                 {this.state.markers.map((item, id) => (
                     <MapView.Marker
                         key={id}
@@ -51,8 +64,31 @@ export default class PlaceMap extends Component {
         );
     }
 
+    checkRisk() {
+        let normalized_point = [this.state.currentPosition["longitude"],
+                                this.state.currentPosition["latitude"]];
+
+        for (i in this.state.polygons) {
+            let polygon = this.state.polygons[i];
+            let normalized_polygon = polygon["geom"].map((coord) => [coord["longitude"], coord["latitude"]]);
+			if (polygon["Município"] == "Rio de Janeiro") {
+				// Era pra ta detectando, mas não ta, ve se isso ajuda a debuggar
+				console.log(normalized_polygon);
+				console.log(normalized_point);
+			}
+
+            if (gju.pointInPolygon({type: "Point", coordinates: normalized_point},
+                                   {type: "Polygon", coordinates: normalized_polygon})) {
+                this.setState({currentPolygon: polygon});
+                return;
+            }
+        }
+
+        this.setState({currentPolygon: {"LIRAa_Março_2017": "Fora do Rio de Janeiro"}});
+    }
+
     addMarker(e){
-        var newMark = {
+        let newMark = {
             key: JSON.stringify(e.nativeEvent.coordinate),
             title: "Alerta",
             coordinates: {
@@ -60,9 +96,13 @@ export default class PlaceMap extends Component {
                 longitude: e.nativeEvent.coordinate.longitude
             }
         };
-        var markers = this.state.markers.slice();
+        let markers = this.state.markers.slice();
         markers.push(newMark);
         this.setState({markers: markers});
+    }
+
+    getLocation() {
+        navigator.geolocation.getCurrentPosition((position) => this.setState({currentPosition: position.coords}));
     }
 }
 
