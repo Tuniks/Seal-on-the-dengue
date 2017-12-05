@@ -60,6 +60,8 @@ export default class PlaceMap extends Component {
                             title={item.title}
                             coordinate={item.coordinates} />
                     ))}
+
+
                 </MapView>
                 <Prompt
                     title="Denúncia"
@@ -68,6 +70,13 @@ export default class PlaceMap extends Component {
                     visible={this.state.promptVisible}
                     onCancel={() => this.undoMarker()}
                     onSubmit={(value) => this.updateMarker(value)}/>
+
+                <View style={[styles.bubble, styles.latlng]}>
+                    <Text style={{textAlign:'center'}}>
+                        {this.state.currentPolygon["LIRAa_Março_2017"]}
+                    </Text>
+                </View>
+
             </View>
     );
     }
@@ -142,5 +151,17 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+    },
+    bubble: {
+        backgroundColor: 'rgba(255,255,255,0.7)',
+        paddingHorizontal: 18,
+        paddingVertical: 12,
+        borderRadius: 20,
+    },
+    latlng: {
+        width: 200,
+        alignItems: 'stretch',
     },
 });
