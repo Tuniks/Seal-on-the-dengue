@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import {View, StyleSheet, Text} from 'react-native';
 import MapView from 'react-native-maps';
 import gju from 'geojson-utils';
 import Prompt from 'rn-prompt'
@@ -15,8 +15,7 @@ export default class PlaceMap extends Component {
         this.state.currentPolygon = {"LIRAa_Março_2017": "Carregando..."};
         this.state.promptVisible = false;
 
-
-        fetch("http://192.168.43.210:3000/data.json")
+        fetch("http://192.168.86.23:3000/data.json")
             .then((response) => response.json())
             .then((json) => {
                 this.setState({polygons: json.map((element) => {
@@ -26,13 +25,10 @@ export default class PlaceMap extends Component {
                               longitude: coord["lng"]
                           };
                     });
-
                     return element;
                 })});
-
                 this.checkRisk();
             });
-
         this.getLocation();
     }
 
@@ -51,6 +47,8 @@ export default class PlaceMap extends Component {
                     showsUserLocation={true}
                     followUserLocation={true}>
 
+                    {/*<MapView.Polygon coordinates={this.state.teste} fillColor={'rgba(0,0,0,0.2)'} />*/}
+
                     <MapView.Marker
                         key={"location"}
                         title={this.state.currentPolygon["LIRAa_Março_2017"]}
@@ -64,9 +62,9 @@ export default class PlaceMap extends Component {
                     ))}
                 </MapView>
                 <Prompt
-                    title="Say something"
-                    placeholder="Start typing"
-                    defaultValue="Hello"
+                    title="Denúncia"
+                    placeholder="descrição"
+                    defaultValue="ocorrido"
                     visible={this.state.promptVisible}
                     onCancel={() => this.undoMarker()}
                     onSubmit={(value) => this.updateMarker(value)}/>
@@ -81,15 +79,13 @@ export default class PlaceMap extends Component {
         for (i in this.state.polygons) {
             let polygon = this.state.polygons[i];
             let normalized_polygon = polygon["geom"].map((coord) => [coord["longitude"], coord["latitude"]]);
+            let even_more_normalized_polygon = [normalized_polygon]
 			if (polygon["Município"] == "Rio de Janeiro") {
-				// Era pra ta detectando, mas não ta, ve se isso ajuda a debuggar
-				console.log(normalized_polygon);
-				console.log(normalized_point);
 			}
-
             if (gju.pointInPolygon({type: "Point", coordinates: normalized_point},
-                                   {type: "Polygon", coordinates: normalized_polygon})) {
+                                   {type: "Polygon", coordinates: even_more_normalized_polygon})) {
                 this.setState({currentPolygon: polygon});
+                console.log("gente foi");
                 return;
             }
         }
