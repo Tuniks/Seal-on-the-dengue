@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import MapView from 'react-native-maps';
 import gju from 'geojson-utils';
+import Prompt from 'rn-prompt'
 
 export default class PlaceMap extends Component {
     constructor() {
@@ -11,8 +12,8 @@ export default class PlaceMap extends Component {
         this.state.polygons = [];
         this.state.markers = [];
         this.state.currentPosition = {latitude: -22.9844, longitude: -43.2324};
-
         this.state.currentPolygon = {"LIRAa_Março_2017": "Carregando..."};
+        this.state.promptVisible = false;
 
 
         fetch("http://192.168.43.210:3000/data.json")
@@ -37,31 +38,40 @@ export default class PlaceMap extends Component {
 
     render() {
         return (
-            <MapView
-                style={styles.map}
-                initialRegion={{
-                    latitude: this.state.currentPosition.latitude,
-                    longitude: this.state.currentPosition.longitude,
-                    latitudeDelta: 0.05,
-                    longitudeDelta: 0.05,
-                }}
-                onLongPress={this.addMarker.bind(this)}
-                showsUserLocation={true}
-                followUserLocation={true}>
+            <View style={styles.container}>
+                <MapView
+                    style={styles.map}
+                    initialRegion={{
+                        latitude: this.state.currentPosition.latitude,
+                        longitude: this.state.currentPosition.longitude,
+                        latitudeDelta: 0.05,
+                        longitudeDelta: 0.05,
+                    }}
+                    onLongPress={this.addMarker.bind(this)}
+                    showsUserLocation={true}
+                    followUserLocation={true}>
 
-                <MapView.Marker
-                    key={"location"}
-                    title={this.state.currentPolygon["LIRAa_Março_2017"]}
-                    coordinate={this.state.currentPosition} />
-
-                {this.state.markers.map((item, id) => (
                     <MapView.Marker
-                        key={id}
-                        title={item.title}
-                        coordinate={item.coordinates} />
-                ))}
-            </MapView>
-        );
+                        key={"location"}
+                        title={this.state.currentPolygon["LIRAa_Março_2017"]}
+                        coordinate={this.state.currentPosition} />
+
+                    {this.state.markers.map((item, id) => (
+                        <MapView.Marker
+                            key={id}
+                            title={item.title}
+                            coordinate={item.coordinates} />
+                    ))}
+                </MapView>
+                <Prompt
+                    title="Say something"
+                    placeholder="Start typing"
+                    defaultValue="Hello"
+                    visible={this.state.promptVisible}
+                    onCancel={() => this.undoMarker()}
+                    onSubmit={(value) => this.updateMarker(value)}/>
+            </View>
+    );
     }
 
     checkRisk() {
@@ -87,7 +97,22 @@ export default class PlaceMap extends Component {
         this.setState({currentPolygon: {"LIRAa_Março_2017": "Fora do Rio de Janeiro"}});
     }
 
+    updateMarker(name){
+        this.state.promptVisible = false;
+        let markers = this.state.markers.slice();
+        markers[markers.length-1].title = name;
+        this.setState({markers: markers});
+    }
+
+    undoMarker(){
+        this.state.promptVisible = false;
+        let markers = this.state.markers.slice();
+        markers.pop();
+        this.setState({markers: markers});
+    }
+
     addMarker(e){
+        this.state.promptVisible = true;
         let newMark = {
             key: JSON.stringify(e.nativeEvent.coordinate),
             title: "Alerta",
@@ -109,7 +134,17 @@ export default class PlaceMap extends Component {
 
 const styles = StyleSheet.create({
     map: {
-        flex: 1
-    }
-
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+    },
+    container: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+    },
 });
